@@ -29,19 +29,20 @@ use std::marker::PhantomData;
 /// Experiment::new("Using callback functions")
 ///     .control(production)
 ///     .experiment(alternative)
-///     .publish(|o: &crate::observation::Observation<f32, f32>| assert!(!o.is_matching()))
+///     .publish(|o: &scientisto::observation::Observation<f32, f32>| assert!(!o.is_matching()))
 ///     .run();
 /// ```
 ///
 /// ## Using closures
 /// ```rust
 /// use scientisto::Experiment;
+/// use tracing::info;
 ///
 /// Experiment::new("Test")
 ///     .control(|| -> f32 { 3.00 })
 ///     .experiment(|| -> f32 { 3.00 })
-///     .publish(|o: &crate::observation::Observation<f32, f32>| {
-///         assert!(!o.is_matching());
+///     .publish(|o: &scientisto::observation::Observation<f32, f32>| {
+///         assert!(o.is_matching());
 ///         tracing::info!("Any logic, including side effects, can be here!")
 ///      })
 ///     .run();

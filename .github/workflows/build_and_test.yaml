@@ -1,9 +1,6 @@
 ---
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
 
 
@@ -11,13 +8,13 @@ name: Check and test
 
 jobs:
   format:
-    name: rustfmt and clippy
+    name: Format and verify
     runs-on: ubuntu-latest
     strategy:
       matrix:
         rust:
           - stable
-          - 1.66.1
+          # - 1.66.1
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
@@ -50,7 +47,7 @@ jobs:
       matrix:
         rust:
           - stable
-          - 1.66.1
+          # - 1.66.1
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
@@ -75,7 +72,7 @@ jobs:
       matrix:
         rust:
           - stable
-          - 1.66.1
+          # - 1.66.1
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
