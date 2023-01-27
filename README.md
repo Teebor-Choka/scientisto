@@ -26,6 +26,10 @@ let result = Experiment::new("Test")
     .run();
 ```
 
+## Workflows
+Greatly inspired by [actions-rs/example](https://github.com/actions-rs/example).
+
+
 ## Limitations
 - No defaults are provided for the `control` and `experiment` callbacks, they must be fully specified
 - No `async` support
