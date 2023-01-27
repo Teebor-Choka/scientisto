@@ -1,11 +1,11 @@
 ---
 
+name: Publish
+
 on:
   push:
     tags:
       - '*'
-
-name: Publish
 
 jobs:
   publish_crate:
