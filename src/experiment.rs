@@ -29,19 +29,20 @@ use std::marker::PhantomData;
 /// Experiment::new("Using callback functions")
 ///     .control(production)
 ///     .experiment(alternative)
-///     .publish(|o: &crate::observation::Observation<f32, f32>| assert!(!o.is_matching()))
+///     .publish(|o: &scientisto::observation::Observation<f32, f32>| assert!(!o.is_matching()))
 ///     .run();
 /// ```
 ///
 /// ## Using closures
 /// ```rust
 /// use scientisto::Experiment;
+/// use tracing::info;
 ///
 /// Experiment::new("Test")
 ///     .control(|| -> f32 { 3.00 })
 ///     .experiment(|| -> f32 { 3.00 })
-///     .publish(|o: &crate::observation::Observation<f32, f32>| {
-///         assert!(!o.is_matching());
+///     .publish(|o: &scientisto::observation::Observation<f32, f32>| {
+///         assert!(o.is_matching());
 ///         tracing::info!("Any logic, including side effects, can be here!")
 ///      })
 ///     .run();
@@ -96,7 +97,7 @@ where
         NT: PartialEq,
         NC: Fn() -> NT + std::panic::UnwindSafe,
     {
-        let dummy_publish = |_l: &crate::observation::Observation<NT, NT>| -> () {};
+        let dummy_publish = |_l: &crate::observation::Observation<NT, NT>| {};
         Experiment {
             name: self.name,
             phantom_return_type_control: PhantomData,
@@ -122,7 +123,7 @@ where
         NE: Fn() -> NTE + std::panic::UnwindSafe,
         NTE: PartialEq<T>,
     {
-        let dummy_publish = |_l: &crate::observation::Observation<T, NTE>| -> () {};
+        let dummy_publish = |_l: &crate::observation::Observation<T, NTE>| {};
         Experiment {
             name: self.name,
             phantom_return_type_control: PhantomData,
@@ -140,7 +141,7 @@ where
     TE: PartialEq<T>,
 {
     pub fn name(&self) -> &str {
-        &self.name
+        self.name
     }
 
     pub fn publish<NP>(self, publish_cb: NP) -> Experiment<T, TE, C, E, NP>

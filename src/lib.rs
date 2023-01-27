@@ -8,12 +8,13 @@
 //! # Example usage
 //! ```rust
 //! use scientisto::Experiment;
+//! use tracing::info;
 //!
 //! let expected: i32 = 1;
 //! let result = Experiment::new("Test")
 //!     .control(|| expected)
 //!     .experiment(|| expected + 1)
-//!     .publish(|o: &crate::observation::Observation<i32, i32>| {
+//!     .publish(|o: &scientisto::observation::Observation<i32, i32>| {
 //!         tracing::info!("You can do any magic in the publisher")
 //!      })
 //!     .run();

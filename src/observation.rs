@@ -43,7 +43,7 @@ where
 {
     let timer = Instant::now();
     Measurement::<U> {
-        result: std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| (function)())),
+        result: std::panic::catch_unwind(std::panic::AssertUnwindSafe(function)),
         duration: timer.elapsed(),
     }
 }
