@@ -280,9 +280,9 @@ mod tests {
         Experiment::new("Test")
             .control(|| expected)
             .experiment(|| {
-                (TestI64 {
+                TestI64 {
                     value: expected.value as i64,
-                })
+                }
             })
             .publish(|o: &crate::observation::Observation<TestI32, TestI64>| {
                 assert!(o.is_matching())
