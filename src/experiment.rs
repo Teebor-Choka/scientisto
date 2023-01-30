@@ -260,7 +260,7 @@ mod tests {
             .run();
     }
 
-    #[derive(PartialEq, Clone)]
+    #[derive(PartialEq, Copy, Clone)]
     struct TestI64 {
         value: i64,
     }
@@ -274,11 +274,13 @@ mod tests {
     #[test]
     fn experiment_should_work_with_different_return_types_if_they_are_comparable() {
         let expected: i32 = 1;
+        let expected_as_i64 = TestI64 { value: expected as i64 };
+
+        assert!(expected_as_i64 == expected_as_i64);        // implements PartialEq
+
         Experiment::new("Test")
-            .control(|| expected)
-            .experiment(|| TestI64 {
-                value: expected as i64,
-            })
+            .control(move || expected)
+            .experiment(move || expected_as_i64)
             .publish(|o: &crate::observation::Observation<i32, TestI64>| assert!(o.is_matching()))
             .run();
     }
