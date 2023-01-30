@@ -1,6 +1,6 @@
 # Scientisto
 
-[![Crates.io](https://img.shields.io/crates/v/scientisto.svg)](https://crates.io/crates/scientisto) [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Teebor-Choka/scientisto/blob/main/LICENSE) [![Publish](https://github.com/Teebor-Choka/scientisto/actions/workflows/publish.yaml/badge.svg)](https://github.com/Teebor-Choka/scientisto/actions/workflows/publish.yaml)
+[![Crates.io](https://img.shields.io/crates/v/scientisto.svg)](https://crates.io/crates/scientisto) [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Teebor-Choka/scientisto/blob/main/LICENSE) [![Publish](https://github.com/Teebor-Choka/scientisto/actions/workflows/publish.yaml/badge.svg)](https://github.com/Teebor-Choka/scientisto/actions/workflows/publish.yaml) [![codecov](https://codecov.io/gh/Teebor-Choka/scientisto/branch/main/graph/badge.svg?token=NHJU2F94UZ)](https://codecov.io/gh/Teebor-Choka/scientisto)
 
 `scientisto` is a light-weight Rust implementation of the [github/scientist](https://github.com/github/scientist) library used for careful refactoring of critical code paths. It provides the `Experiment` struct used to define the conducted experiment and publishing utilities.
 
