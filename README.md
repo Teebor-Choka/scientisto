@@ -4,18 +4,23 @@
 
 `scientisto` is a light-weight Rust implementation of the [github/scientist](https://github.com/github/scientist) library used for careful refactoring of critical code paths. It provides the `Experiment` struct used to define the conducted experiment and publishing utilities.
 
+
+
 ## About
 
 The library aims to be as minimal as possible, pulling no external dependencies and using a bare minimum from the `std` library.
 
+
+
 ## Usage
+
 `Experiment` struct represents a definition of the **control** and **experimental** execution block code paths.
 
 The experiment is guided by the configuration specified during the `Experiment` construction and result observations are published internally using the `publish` function.
 
 ```rust
 use scientisto::Experiment;
-use tracing::info;
+use tracing;
 
 let expected: i32 = 1;
 let result = Experiment::new("Test")
@@ -28,6 +33,22 @@ let result = Experiment::new("Test")
 ```
 
 
+
 ## Limitations
+
 - No defaults are provided for the `control` and `experiment` callbacks, they must be fully specified
 - No `async` support
+
+
+
+## Testing
+
+Current code coverage with tests:
+
+![Code coverage](https://codecov.io/gh/Teebor-Choka/scientisto/branch/main/graphs/tree.svg?token=NHJU2F94UZ)
+
+
+
+## License
+
+MIT

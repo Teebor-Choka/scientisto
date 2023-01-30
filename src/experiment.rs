@@ -9,6 +9,12 @@ use std::marker::PhantomData;
 /// publisher is a `noop`, whereas a custom publisher can be used either as a passed function or
 /// closure. Publisher can contain any logic, as long as it returns a `Unit` type.
 ///
+/// # Operation
+/// - decides whether or not to run the experiment block
+/// - measures the durations of all behaviors as std::time::Duration
+/// - swallows and records exceptions raised in the try block when overriding raised
+/// - publishes all this information
+///
 /// # Panics
 /// Panics if the **control** function panics using the `std::panic::resume_unwind`.
 ///
@@ -176,11 +182,6 @@ where
         P: Fn(&crate::observation::Observation<T, TE>),
         Predicate: Fn() -> bool,
     {
-        // It decides whether or not to run the try block,
-        // Measures the durations of all behaviors as std::time::Duration,
-        // Swallow and record exceptions raised in the try block when overriding raised, and
-        // Publishes all this information.
-
         if condition() {
             let control = crate::observation::execute_with_timer::<C, T>(self.control_cb);
             let experiment = crate::observation::execute_with_timer::<E, TE>(self.experiment_cb);
@@ -205,6 +206,13 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn experiment_should_derive_the_debug_trait() {
+        let experiment = Experiment::new("empty experiment");
+
+        assert_ne!(format!("{:?}", experiment), "");
+    }
 
     #[test]
     #[should_panic]
@@ -252,41 +260,30 @@ mod tests {
             .run();
     }
 
-    #[derive(PartialEq, Debug, Copy, Clone)]
-    struct TestI32 {
-        value: i32,
-    }
-
-    #[derive(PartialEq, Debug, Copy, Clone)]
+    #[derive(PartialEq, Copy, Clone)]
     struct TestI64 {
         value: i64,
     }
 
-    impl PartialEq<TestI32> for TestI64 {
-        fn eq(&self, other: &TestI32) -> bool {
-            self.value as i32 == other.value
-        }
-    }
-
-    impl PartialEq<TestI64> for TestI32 {
-        fn eq(&self, other: &TestI64) -> bool {
-            self.value == other.value as i32
+    impl PartialEq<i32> for TestI64 {
+        fn eq(&self, other: &i32) -> bool {
+            self.value as i32 == *other
         }
     }
 
     #[test]
     fn experiment_should_work_with_different_return_types_if_they_are_comparable() {
-        let expected = TestI32 { value: 1 };
+        let expected: i32 = 1;
+        let expected_as_i64 = TestI64 {
+            value: expected as i64,
+        };
+
+        assert!(expected_as_i64 == expected_as_i64); // implements PartialEq
+
         Experiment::new("Test")
-            .control(|| expected)
-            .experiment(|| {
-                TestI64 {
-                    value: expected.value as i64,
-                }
-            })
-            .publish(|o: &crate::observation::Observation<TestI32, TestI64>| {
-                assert!(o.is_matching())
-            })
+            .control(move || expected)
+            .experiment(move || expected_as_i64)
+            .publish(|o: &crate::observation::Observation<i32, TestI64>| assert!(o.is_matching()))
             .run();
     }
 

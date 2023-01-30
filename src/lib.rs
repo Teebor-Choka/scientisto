@@ -7,7 +7,7 @@
 //! # Example usage
 //! ```rust
 //! use scientisto::Experiment;
-//! use tracing::info;
+//! use tracing;
 //!
 //! let expected: i32 = 1;
 //! let result = Experiment::new("Test")
