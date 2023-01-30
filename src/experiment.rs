@@ -274,9 +274,11 @@ mod tests {
     #[test]
     fn experiment_should_work_with_different_return_types_if_they_are_comparable() {
         let expected: i32 = 1;
-        let expected_as_i64 = TestI64 { value: expected as i64 };
+        let expected_as_i64 = TestI64 {
+            value: expected as i64,
+        };
 
-        assert!(expected_as_i64 == expected_as_i64);        // implements PartialEq
+        assert!(expected_as_i64 == expected_as_i64); // implements PartialEq
 
         Experiment::new("Test")
             .control(move || expected)
