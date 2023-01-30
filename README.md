@@ -9,11 +9,10 @@
 The library aims to be as minimal as possible, pulling no external dependencies and using a bare minimum from the `std` library.
 
 ## Usage
-`Experiment` struct represents a definition of an experimental code path with explicit implementations of the **control** and **experimental** execution blocks.
+`Experiment` struct represents a definition of the **control** and **experimental** execution block code paths.
 
-The experiment is guided by the configuration specified during the `Experiment` construction.
+The experiment is guided by the configuration specified during the `Experiment` construction and result observations are published internally using the `publish` function.
 
-The experiment observations are published internally using the `publish` function.
 ```rust
 use scientisto::Experiment;
 use tracing::info;
@@ -22,7 +21,7 @@ let expected: i32 = 1;
 let result = Experiment::new("Test")
     .control(|| expected)
     .experiment(|| expected + 1)
-    .publish(|o: &scientisto::observation::Observation<i32, i32>| {
+    .publish(|o: &scientisto::Observation<i32, i32>| {
         tracing::info!("You can do any magic in the publisher")
      })
     .run();
