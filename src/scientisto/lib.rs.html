@@ -24,24 +24,22 @@
 <a href="#24" id="24">24</a>
 <a href="#25" id="25">25</a>
 <a href="#26" id="26">26</a>
-<a href="#27" id="27">27</a>
-</pre><pre class="rust"><code><span class="doccomment">//! `Experiment` struct represents a definition of an experimental code path with explicit
-//! implementations of the **control** and **experimental** execution blocks.
+</pre><pre class="rust"><code><span class="doccomment">//! `Experiment` struct represents a definition of the **control** and **experimental** execution block code paths.
 //!
-//! The experiment is guided by the configuration specified during the `Experiment` construction.
-//!
-//! The experiment observations are published internally using the `publish` function.
+//! The experiment is guided by the configuration specified during the `Experiment` construction and result
+//! observations are published internally using the `publish` functionExperiment` struct represents a
+//! definition of an experimental code path with explicit.
 //!
 //! # Example usage
 //! ```rust
 //! use scientisto::Experiment;
-//! use tracing::info;
+//! use tracing;
 //!
 //! let expected: i32 = 1;
 //! let result = Experiment::new(&quot;Test&quot;)
 //!     .control(|| expected)
 //!     .experiment(|| expected + 1)
-//!     .publish(|o: &amp;scientisto::observation::Observation&lt;i32, i32&gt;| {
+//!     .publish(|o: &amp;scientisto::Observation&lt;i32, i32&gt;| {
 //!         tracing::info!(&quot;You can do any magic in the publisher&quot;)
 //!      })
 //!     .run();
