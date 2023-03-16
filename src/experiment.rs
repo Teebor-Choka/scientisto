@@ -1,4 +1,5 @@
 use std::marker::PhantomData;
+use std::panic::{catch_unwind, AssertUnwindSafe};
 
 /// Experiment
 /// Basic struct defining the conducted experiment. Initialized using type definitions instead of
@@ -35,7 +36,7 @@ use std::marker::PhantomData;
 /// Experiment::new("Using callback functions")
 ///     .control(production)
 ///     .experiment(alternative)
-///     .publish(|o: &scientisto::observation::Observation<f32, f32>| assert!(!o.is_matching()))
+///     .publish(|o: &scientisto::Observation<f32, f32>| assert!(!o.is_matching()))
 ///     .run();
 /// ```
 ///
@@ -49,156 +50,159 @@ use std::marker::PhantomData;
 ///     .experiment(|| -> f32 { 3.00 })
 ///     .publish(|o: &scientisto::observation::Observation<f32, f32>| {
 ///         assert!(o.is_matching());
-///         tracing::info!("Any logic, including side effects, can be here!")
+///         info!("Any logic, including side effects, can be here!")
 ///      })
 ///     .run();
 /// ```
 ///
-#[derive(Debug)]
-pub struct Experiment<T, TE, C, E, P>
+
+struct Executable<T, F>
 where
-    T: PartialEq,
-    TE: PartialEq<T>,
+    F: Fn() -> T,
 {
-    /// The name under which the experiment is registered.
-    name: &'static str,
-    /// Phantom data used to allow extracting the type of control callback return value
-    phantom_return_type_control: PhantomData<T>,
-    /// Phantom data used to allow extracting the type of experimental callback return value
-    phantom_return_type_experiment: PhantomData<TE>,
-    /// Control callback function
-    control_cb: C,
-    /// Experimental callback function
-    experiment_cb: E,
-    /// Publish callback function
-    publish_cb: P,
+    phantom_return_type: PhantomData<T>,
+    pub f: F,
 }
 
-impl Experiment<bool, bool, (), (), ()> {
-    pub fn new(name: &'static str) -> Experiment<bool, bool, (), (), ()> {
+impl<T, F> Executable<T, F>
+where
+    F: Fn() -> T,
+{
+    pub fn new(f: F) -> Self {
+        Self {
+            phantom_return_type: Default::default(),
+            f,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Experiment {
+    /// The name under which the experiment is registered.
+    name: String,
+}
+
+impl Experiment {
+    pub fn new(name: &str) -> Self {
         if name.is_empty() {
             panic!("Experiment name cannot be empty");
         }
 
-        Experiment {
-            name,
-            phantom_return_type_control: PhantomData,
-            phantom_return_type_experiment: PhantomData,
-            control_cb: (),
-            experiment_cb: (),
-            publish_cb: (),
+        Self {
+            name: name.to_owned(),
+        }
+    }
+
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+
+    pub fn control<T, F>(self, f: F) -> ControlOnly<T, F>
+    where
+        T: PartialEq,
+        F: Fn() -> T + std::panic::UnwindSafe,
+    {
+        ControlOnly {
+            name: self.name,
+            control: Executable::<T, F>::new(f),
         }
     }
 }
 
-impl<T> Experiment<T, T, (), (), ()>
+pub struct ControlOnly<TC, FC>
 where
-    T: PartialEq,
+    TC: PartialEq,
+    FC: Fn() -> TC + std::panic::UnwindSafe,
 {
-    pub fn control<NT, NC>(
+    name: String,
+    control: Executable<TC, FC>,
+}
+
+impl<TC, FC> ControlOnly<TC, FC>
+where
+    TC: PartialEq,
+    FC: Fn() -> TC + std::panic::UnwindSafe,
+{
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+
+    pub fn experiment<T, F>(
         self,
-        control_cb: NC,
-    ) -> Experiment<NT, NT, NC, (), impl Fn(&crate::observation::Observation<NT, NT>)>
+        f: F,
+    ) -> CompleteExperiment<TC, FC, T, F, impl Fn(&crate::Observation<TC, T>)>
     where
-        NT: PartialEq,
-        NC: Fn() -> NT + std::panic::UnwindSafe,
+        T: PartialEq<TC>,
+        F: Fn() -> T + std::panic::UnwindSafe,
     {
-        let dummy_publish = |_l: &crate::observation::Observation<NT, NT>| {};
-        Experiment {
+        CompleteExperiment {
             name: self.name,
-            phantom_return_type_control: PhantomData,
-            phantom_return_type_experiment: PhantomData,
-            control_cb,
-            experiment_cb: self.experiment_cb,
-            publish_cb: dummy_publish,
+            control: self.control,
+            experiment: Executable::<T, F>::new(f),
+            publish: |_: &crate::Observation<TC, T>| {},
         }
     }
 }
 
-impl<T, TE, C, P> Experiment<T, TE, C, (), P>
+pub struct CompleteExperiment<TC, FC, TE, FE, FP>
 where
-    T: PartialEq,
-    TE: PartialEq<T>,
+    TE: PartialEq<TC>,
+    FC: Fn() -> TC + std::panic::UnwindSafe,
+    FE: Fn() -> TE + std::panic::UnwindSafe,
+    FP: Fn(&crate::Observation<TC, TE>),
 {
-    pub fn experiment<NTE, NE>(
-        self,
-        experiment_cb: NE,
-    ) -> Experiment<T, NTE, C, NE, impl Fn(&crate::observation::Observation<T, NTE>)>
-    where
-        C: Fn() -> T + std::panic::UnwindSafe,
-        NE: Fn() -> NTE + std::panic::UnwindSafe,
-        NTE: PartialEq<T>,
-    {
-        let dummy_publish = |_l: &crate::observation::Observation<T, NTE>| {};
-        Experiment {
-            name: self.name,
-            phantom_return_type_control: PhantomData,
-            phantom_return_type_experiment: PhantomData,
-            control_cb: self.control_cb,
-            experiment_cb,
-            publish_cb: dummy_publish,
-        }
-    }
+    name: String,
+    control: Executable<TC, FC>,
+    experiment: Executable<TE, FE>,
+    publish: FP,
 }
 
-impl<T, TE, C, E, P> Experiment<T, TE, C, E, P>
+impl<TC, FC, TE, FE, FP> CompleteExperiment<TC, FC, TE, FE, FP>
 where
-    T: PartialEq,
-    TE: PartialEq<T>,
+    TE: PartialEq<TC>,
+    FC: Fn() -> TC + std::panic::UnwindSafe,
+    FE: Fn() -> TE + std::panic::UnwindSafe,
+    FP: Fn(&crate::Observation<TC, TE>),
 {
-    pub fn name(&self) -> &str {
-        self.name
+    pub fn name(&self) -> String {
+        self.name.clone()
     }
 
-    pub fn publish<NP>(self, publish_cb: NP) -> Experiment<T, TE, C, E, NP>
+    pub fn publish<F>(self, f: F) -> CompleteExperiment<TC, FC, TE, FE, F>
     where
-        C: Fn() -> T,
-        E: Fn() -> TE,
-        NP: Fn(&crate::observation::Observation<T, TE>),
+        F: Fn(&crate::Observation<TC, TE>),
     {
-        Experiment {
+        CompleteExperiment::<TC, FC, TE, FE, F> {
             name: self.name,
-            phantom_return_type_control: PhantomData,
-            phantom_return_type_experiment: PhantomData,
-            control_cb: self.control_cb,
-            experiment_cb: self.experiment_cb,
-            publish_cb,
+            control: self.control,
+            experiment: self.experiment,
+            publish: f,
         }
     }
 
-    pub fn run(self) -> T
-    where
-        C: Fn() -> T + std::panic::UnwindSafe,
-        E: Fn() -> TE + std::panic::UnwindSafe,
-        P: Fn(&crate::observation::Observation<T, TE>),
-    {
+    pub fn run(&self) -> TC {
         self.run_if(|| true)
     }
 
-    pub fn run_if<Predicate>(self, condition: Predicate) -> T
+    pub fn run_if<P>(&self, predicate: P) -> TC
     where
-        C: Fn() -> T + std::panic::UnwindSafe,
-        E: Fn() -> TE + std::panic::UnwindSafe,
-        P: Fn(&crate::observation::Observation<T, TE>),
-        Predicate: Fn() -> bool,
+        TE: PartialEq<TC>,
+        P: Fn() -> bool,
     {
-        if condition() {
-            let control = crate::observation::execute_with_timer::<C, T>(self.control_cb);
-            let experiment = crate::observation::execute_with_timer::<E, TE>(self.experiment_cb);
-
-            let observation = crate::observation::Observation::<T, TE> {
-                control,
-                experiment,
+        if predicate() {
+            let observation = crate::Observation::<TC, TE> {
+                control: catch_unwind(AssertUnwindSafe(&self.control.f)),
+                experiment: catch_unwind(AssertUnwindSafe(&self.experiment.f)),
             };
 
-            (self.publish_cb)(&observation);
+            (self.publish)(&observation);
 
-            match observation.control.result {
+            match observation.control {
                 Ok(result) => result,
                 Err(e) => std::panic::resume_unwind(e),
             }
         } else {
-            (self.control_cb)()
+            (self.control.f)()
         }
     }
 }
@@ -217,6 +221,8 @@ mod tests {
     #[test]
     #[should_panic]
     fn experiment_should_panic_on_empty_string_name() {
+        std::panic::set_hook(Box::new(|_| {})); // hide traces from panic
+
         Experiment::new("");
     }
 
@@ -226,6 +232,22 @@ mod tests {
         let experiment = Experiment::new(actual_name);
 
         assert_eq!(experiment.name(), actual_name);
+    }
+
+    #[test]
+    fn experiment_should_return_name_the_control_object() {
+        let actual_name: &str = "Only control callback";
+        let experiment = Experiment::new(actual_name).control(|| false);
+
+        assert_eq!(experiment.name(), actual_name);
+    }
+
+    #[test]
+    fn experiment_should_return_name_if_control_and_experiment_are_fully_specified() {
+        let name: &str = "Only control callback";
+        let experiment = Experiment::new(name).control(|| 1).experiment(|| 1);
+
+        assert_eq!(experiment.name(), name);
     }
 
     #[test]
@@ -256,7 +278,7 @@ mod tests {
         Experiment::new("Test")
             .control(|| expected)
             .experiment(|| expected)
-            .publish(|o: &crate::observation::Observation<i32, i32>| assert!(o.is_matching()))
+            .publish(|o: &crate::Observation<i32, i32>| assert!(o.is_matching()))
             .run();
     }
 
@@ -283,13 +305,15 @@ mod tests {
         Experiment::new("Test")
             .control(move || expected)
             .experiment(move || expected_as_i64)
-            .publish(|o: &crate::observation::Observation<i32, TestI64>| assert!(o.is_matching()))
+            .publish(|o: &crate::Observation<i32, TestI64>| assert!(o.is_matching()))
             .run();
     }
 
     #[test]
     #[should_panic]
     fn experiment_should_panic_if_control_panics() {
+        std::panic::set_hook(Box::new(|_| {})); // hide traces from panic
+
         let expected: i32 = 1;
         Experiment::new("Test")
             .control(|| -> i32 { panic!("Oops") })
@@ -303,7 +327,7 @@ mod tests {
         Experiment::new("Test")
             .control(|| expected)
             .experiment(|| expected + 1)
-            .publish(|o: &crate::observation::Observation<i32, i32>| assert!(!o.is_matching()))
+            .publish(|o: &crate::Observation<i32, i32>| assert!(!o.is_matching()))
             .run();
     }
 
