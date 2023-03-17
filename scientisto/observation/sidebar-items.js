@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["execute_with_timer","Execute a function and measure the execution time."]],"struct":[["Measurement","Measurement Individual measurement for the executed functionality."],["Observation","Observation Observation aggregating the measurements collected during execution of the control and experimental functionality."]]};
+window.SIDEBAR_ITEMS = {"struct":["Observation"]};

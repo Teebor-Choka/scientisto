@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/experiment.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>experiment.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-1f7d512b176f0f72.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-124a1ca42af929b6.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-f2fc7b5fd698d27d.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-5f7299aa2b503fb1.css"><link rel="stylesheet" disabled href="../../static.files/dark-dfb18ef8114bb428.css"><link rel="stylesheet" disabled href="../../static.files/ayu-4047a6aaddd3789d.css"><script id="default-settings" ></script><script src="../../static.files/storage-d43fa987303ecbbb.js"></script><script defer src="../../static.files/source-script-ea63cb6500f71309.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-02cbe07fc548e88c.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../scientisto/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-5ec35bf9ca753509.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/experiment.rs`."><title>experiment.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="scientisto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (511364e78 2023-03-16)" data-search-js="search-d1bc581867fd0849.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-9184409068f70b79.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-f5a2577c5297a973.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../scientisto/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -316,7 +316,32 @@
 <a href="#316" id="316">316</a>
 <a href="#317" id="317">317</a>
 <a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::marker::PhantomData;
+<span class="kw">use </span>std::panic::{catch_unwind, AssertUnwindSafe};
 
 <span class="doccomment">/// Experiment
 /// Basic struct defining the conducted experiment. Initialized using type definitions instead of
@@ -353,7 +378,7 @@
 /// Experiment::new(&quot;Using callback functions&quot;)
 ///     .control(production)
 ///     .experiment(alternative)
-///     .publish(|o: &amp;scientisto::observation::Observation&lt;f32, f32&gt;| assert!(!o.is_matching()))
+///     .publish(|o: &amp;scientisto::Observation&lt;f32, f32&gt;| assert!(!o.is_matching()))
 ///     .run();
 /// ```
 ///
@@ -367,156 +392,159 @@
 ///     .experiment(|| -&gt; f32 { 3.00 })
 ///     .publish(|o: &amp;scientisto::observation::Observation&lt;f32, f32&gt;| {
 ///         assert!(o.is_matching());
-///         tracing::info!(&quot;Any logic, including side effects, can be here!&quot;)
+///         info!(&quot;Any logic, including side effects, can be here!&quot;)
 ///      })
 ///     .run();
 /// ```
 ///
-</span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>Experiment&lt;T, TE, C, E, P&gt;
+
+</span><span class="kw">struct </span>Executable&lt;T, F&gt;
 <span class="kw">where
-    </span>T: PartialEq,
-    TE: PartialEq&lt;T&gt;,
+    </span>F: Fn() -&gt; T,
 {
-    <span class="doccomment">/// The name under which the experiment is registered.
-    </span>name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
-    <span class="doccomment">/// Phantom data used to allow extracting the type of control callback return value
-    </span>phantom_return_type_control: PhantomData&lt;T&gt;,
-    <span class="doccomment">/// Phantom data used to allow extracting the type of experimental callback return value
-    </span>phantom_return_type_experiment: PhantomData&lt;TE&gt;,
-    <span class="doccomment">/// Control callback function
-    </span>control_cb: C,
-    <span class="doccomment">/// Experimental callback function
-    </span>experiment_cb: E,
-    <span class="doccomment">/// Publish callback function
-    </span>publish_cb: P,
+    phantom_return_type: PhantomData&lt;T&gt;,
+    <span class="kw">pub </span>f: F,
 }
 
-<span class="kw">impl </span>Experiment&lt;bool, bool, (), (), ()&gt; {
-    <span class="kw">pub fn </span>new(name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; Experiment&lt;bool, bool, (), (), ()&gt; {
+<span class="kw">impl</span>&lt;T, F&gt; Executable&lt;T, F&gt;
+<span class="kw">where
+    </span>F: Fn() -&gt; T,
+{
+    <span class="kw">pub fn </span>new(f: F) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            phantom_return_type: Default::default(),
+            f,
+        }
+    }
+}
+
+<span class="attr">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Experiment {
+    <span class="doccomment">/// The name under which the experiment is registered.
+    </span>name: String,
+}
+
+<span class="kw">impl </span>Experiment {
+    <span class="kw">pub fn </span>new(name: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
         <span class="kw">if </span>name.is_empty() {
             <span class="macro">panic!</span>(<span class="string">&quot;Experiment name cannot be empty&quot;</span>);
         }
 
-        Experiment {
-            name,
-            phantom_return_type_control: PhantomData,
-            phantom_return_type_experiment: PhantomData,
-            control_cb: (),
-            experiment_cb: (),
-            publish_cb: (),
+        <span class="self">Self </span>{
+            name: name.to_owned(),
+        }
+    }
+
+    <span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.name.clone()
+    }
+
+    <span class="kw">pub fn </span>control&lt;T, F&gt;(<span class="self">self</span>, f: F) -&gt; ControlOnly&lt;T, F&gt;
+    <span class="kw">where
+        </span>T: PartialEq,
+        F: Fn() -&gt; T + std::panic::UnwindSafe,
+    {
+        ControlOnly {
+            name: <span class="self">self</span>.name,
+            control: Executable::&lt;T, F&gt;::new(f),
         }
     }
 }
 
-<span class="kw">impl</span>&lt;T&gt; Experiment&lt;T, T, (), (), ()&gt;
+<span class="kw">pub struct </span>ControlOnly&lt;TC, FC&gt;
 <span class="kw">where
-    </span>T: PartialEq,
+    </span>TC: PartialEq,
+    FC: Fn() -&gt; TC + std::panic::UnwindSafe,
 {
-    <span class="kw">pub fn </span>control&lt;NT, NC&gt;(
+    name: String,
+    control: Executable&lt;TC, FC&gt;,
+}
+
+<span class="kw">impl</span>&lt;TC, FC&gt; ControlOnly&lt;TC, FC&gt;
+<span class="kw">where
+    </span>TC: PartialEq,
+    FC: Fn() -&gt; TC + std::panic::UnwindSafe,
+{
+    <span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.name.clone()
+    }
+
+    <span class="kw">pub fn </span>experiment&lt;T, F&gt;(
         <span class="self">self</span>,
-        control_cb: NC,
-    ) -&gt; Experiment&lt;NT, NT, NC, (), <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="kw">crate</span>::observation::Observation&lt;NT, NT&gt;)&gt;
+        f: F,
+    ) -&gt; CompleteExperiment&lt;TC, FC, T, F, <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="kw">crate</span>::Observation&lt;TC, T&gt;)&gt;
     <span class="kw">where
-        </span>NT: PartialEq,
-        NC: Fn() -&gt; NT + std::panic::UnwindSafe,
+        </span>T: PartialEq&lt;TC&gt;,
+        F: Fn() -&gt; T + std::panic::UnwindSafe,
     {
-        <span class="kw">let </span>dummy_publish = |_l: <span class="kw-2">&amp;</span><span class="kw">crate</span>::observation::Observation&lt;NT, NT&gt;| {};
-        Experiment {
+        CompleteExperiment {
             name: <span class="self">self</span>.name,
-            phantom_return_type_control: PhantomData,
-            phantom_return_type_experiment: PhantomData,
-            control_cb,
-            experiment_cb: <span class="self">self</span>.experiment_cb,
-            publish_cb: dummy_publish,
+            control: <span class="self">self</span>.control,
+            experiment: Executable::&lt;T, F&gt;::new(f),
+            publish: |<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw">crate</span>::Observation&lt;TC, T&gt;| {},
         }
     }
 }
 
-<span class="kw">impl</span>&lt;T, TE, C, P&gt; Experiment&lt;T, TE, C, (), P&gt;
+<span class="kw">pub struct </span>CompleteExperiment&lt;TC, FC, TE, FE, FP&gt;
 <span class="kw">where
-    </span>T: PartialEq,
-    TE: PartialEq&lt;T&gt;,
+    </span>TE: PartialEq&lt;TC&gt;,
+    FC: Fn() -&gt; TC + std::panic::UnwindSafe,
+    FE: Fn() -&gt; TE + std::panic::UnwindSafe,
+    FP: Fn(<span class="kw-2">&amp;</span><span class="kw">crate</span>::Observation&lt;TC, TE&gt;),
 {
-    <span class="kw">pub fn </span>experiment&lt;NTE, NE&gt;(
-        <span class="self">self</span>,
-        experiment_cb: NE,
-    ) -&gt; Experiment&lt;T, NTE, C, NE, <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="kw">crate</span>::observation::Observation&lt;T, NTE&gt;)&gt;
-    <span class="kw">where
-        </span>C: Fn() -&gt; T + std::panic::UnwindSafe,
-        NE: Fn() -&gt; NTE + std::panic::UnwindSafe,
-        NTE: PartialEq&lt;T&gt;,
-    {
-        <span class="kw">let </span>dummy_publish = |_l: <span class="kw-2">&amp;</span><span class="kw">crate</span>::observation::Observation&lt;T, NTE&gt;| {};
-        Experiment {
-            name: <span class="self">self</span>.name,
-            phantom_return_type_control: PhantomData,
-            phantom_return_type_experiment: PhantomData,
-            control_cb: <span class="self">self</span>.control_cb,
-            experiment_cb,
-            publish_cb: dummy_publish,
-        }
-    }
+    name: String,
+    control: Executable&lt;TC, FC&gt;,
+    experiment: Executable&lt;TE, FE&gt;,
+    publish: FP,
 }
 
-<span class="kw">impl</span>&lt;T, TE, C, E, P&gt; Experiment&lt;T, TE, C, E, P&gt;
+<span class="kw">impl</span>&lt;TC, FC, TE, FE, FP&gt; CompleteExperiment&lt;TC, FC, TE, FE, FP&gt;
 <span class="kw">where
-    </span>T: PartialEq,
-    TE: PartialEq&lt;T&gt;,
+    </span>TE: PartialEq&lt;TC&gt;,
+    FC: Fn() -&gt; TC + std::panic::UnwindSafe,
+    FE: Fn() -&gt; TE + std::panic::UnwindSafe,
+    FP: Fn(<span class="kw-2">&amp;</span><span class="kw">crate</span>::Observation&lt;TC, TE&gt;),
 {
-    <span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-        <span class="self">self</span>.name
+    <span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.name.clone()
     }
 
-    <span class="kw">pub fn </span>publish&lt;NP&gt;(<span class="self">self</span>, publish_cb: NP) -&gt; Experiment&lt;T, TE, C, E, NP&gt;
+    <span class="kw">pub fn </span>publish&lt;F&gt;(<span class="self">self</span>, f: F) -&gt; CompleteExperiment&lt;TC, FC, TE, FE, F&gt;
     <span class="kw">where
-        </span>C: Fn() -&gt; T,
-        E: Fn() -&gt; TE,
-        NP: Fn(<span class="kw-2">&amp;</span><span class="kw">crate</span>::observation::Observation&lt;T, TE&gt;),
+        </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">crate</span>::Observation&lt;TC, TE&gt;),
     {
-        Experiment {
+        CompleteExperiment::&lt;TC, FC, TE, FE, F&gt; {
             name: <span class="self">self</span>.name,
-            phantom_return_type_control: PhantomData,
-            phantom_return_type_experiment: PhantomData,
-            control_cb: <span class="self">self</span>.control_cb,
-            experiment_cb: <span class="self">self</span>.experiment_cb,
-            publish_cb,
+            control: <span class="self">self</span>.control,
+            experiment: <span class="self">self</span>.experiment,
+            publish: f,
         }
     }
 
-    <span class="kw">pub fn </span>run(<span class="self">self</span>) -&gt; T
-    <span class="kw">where
-        </span>C: Fn() -&gt; T + std::panic::UnwindSafe,
-        E: Fn() -&gt; TE + std::panic::UnwindSafe,
-        P: Fn(<span class="kw-2">&amp;</span><span class="kw">crate</span>::observation::Observation&lt;T, TE&gt;),
-    {
+    <span class="kw">pub fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TC {
         <span class="self">self</span>.run_if(|| <span class="bool-val">true</span>)
     }
 
-    <span class="kw">pub fn </span>run_if&lt;Predicate&gt;(<span class="self">self</span>, condition: Predicate) -&gt; T
+    <span class="kw">pub fn </span>run_if&lt;P&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, predicate: P) -&gt; TC
     <span class="kw">where
-        </span>C: Fn() -&gt; T + std::panic::UnwindSafe,
-        E: Fn() -&gt; TE + std::panic::UnwindSafe,
-        P: Fn(<span class="kw-2">&amp;</span><span class="kw">crate</span>::observation::Observation&lt;T, TE&gt;),
-        Predicate: Fn() -&gt; bool,
+        </span>TE: PartialEq&lt;TC&gt;,
+        P: Fn() -&gt; bool,
     {
-        <span class="kw">if </span>condition() {
-            <span class="kw">let </span>control = <span class="kw">crate</span>::observation::execute_with_timer::&lt;C, T&gt;(<span class="self">self</span>.control_cb);
-            <span class="kw">let </span>experiment = <span class="kw">crate</span>::observation::execute_with_timer::&lt;E, TE&gt;(<span class="self">self</span>.experiment_cb);
-
-            <span class="kw">let </span>observation = <span class="kw">crate</span>::observation::Observation::&lt;T, TE&gt; {
-                control,
-                experiment,
+        <span class="kw">if </span>predicate() {
+            <span class="kw">let </span>observation = <span class="kw">crate</span>::Observation::&lt;TC, TE&gt; {
+                control: catch_unwind(AssertUnwindSafe(<span class="kw-2">&amp;</span><span class="self">self</span>.control.f)),
+                experiment: catch_unwind(AssertUnwindSafe(<span class="kw-2">&amp;</span><span class="self">self</span>.experiment.f)),
             };
 
-            (<span class="self">self</span>.publish_cb)(<span class="kw-2">&amp;</span>observation);
+            (<span class="self">self</span>.publish)(<span class="kw-2">&amp;</span>observation);
 
-            <span class="kw">match </span>observation.control.result {
+            <span class="kw">match </span>observation.control {
                 <span class="prelude-val">Ok</span>(result) =&gt; result,
                 <span class="prelude-val">Err</span>(e) =&gt; std::panic::resume_unwind(e),
             }
         } <span class="kw">else </span>{
-            (<span class="self">self</span>.control_cb)()
+            (<span class="self">self</span>.control.f)()
         }
     }
 }
@@ -535,7 +563,9 @@
     <span class="attr">#[test]
     #[should_panic]
     </span><span class="kw">fn </span>experiment_should_panic_on_empty_string_name() {
-        Experiment::new(<span class="string">&quot;&quot;</span>);
+        std::panic::set_hook(Box::new(|<span class="kw">_</span>| {})); <span class="comment">// hide traces from panic
+
+        </span>Experiment::new(<span class="string">&quot;&quot;</span>);
     }
 
     <span class="attr">#[test]
@@ -544,6 +574,22 @@
         <span class="kw">let </span>experiment = Experiment::new(actual_name);
 
         <span class="macro">assert_eq!</span>(experiment.name(), actual_name);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>experiment_should_return_name_the_control_object() {
+        <span class="kw">let </span>actual_name: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Only control callback&quot;</span>;
+        <span class="kw">let </span>experiment = Experiment::new(actual_name).control(|| <span class="bool-val">false</span>);
+
+        <span class="macro">assert_eq!</span>(experiment.name(), actual_name);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>experiment_should_return_name_if_control_and_experiment_are_fully_specified() {
+        <span class="kw">let </span>name: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Only control callback&quot;</span>;
+        <span class="kw">let </span>experiment = Experiment::new(name).control(|| <span class="number">1</span>).experiment(|| <span class="number">1</span>);
+
+        <span class="macro">assert_eq!</span>(experiment.name(), name);
     }
 
     <span class="attr">#[test]
@@ -574,7 +620,7 @@
         Experiment::new(<span class="string">&quot;Test&quot;</span>)
             .control(|| expected)
             .experiment(|| expected)
-            .publish(|o: <span class="kw-2">&amp;</span><span class="kw">crate</span>::observation::Observation&lt;i32, i32&gt;| <span class="macro">assert!</span>(o.is_matching()))
+            .publish(|o: <span class="kw-2">&amp;</span><span class="kw">crate</span>::Observation&lt;i32, i32&gt;| <span class="macro">assert!</span>(o.is_matching()))
             .run();
     }
 
@@ -601,14 +647,16 @@
         </span>Experiment::new(<span class="string">&quot;Test&quot;</span>)
             .control(<span class="kw">move </span>|| expected)
             .experiment(<span class="kw">move </span>|| expected_as_i64)
-            .publish(|o: <span class="kw-2">&amp;</span><span class="kw">crate</span>::observation::Observation&lt;i32, TestI64&gt;| <span class="macro">assert!</span>(o.is_matching()))
+            .publish(|o: <span class="kw-2">&amp;</span><span class="kw">crate</span>::Observation&lt;i32, TestI64&gt;| <span class="macro">assert!</span>(o.is_matching()))
             .run();
     }
 
     <span class="attr">#[test]
     #[should_panic]
     </span><span class="kw">fn </span>experiment_should_panic_if_control_panics() {
-        <span class="kw">let </span>expected: i32 = <span class="number">1</span>;
+        std::panic::set_hook(Box::new(|<span class="kw">_</span>| {})); <span class="comment">// hide traces from panic
+
+        </span><span class="kw">let </span>expected: i32 = <span class="number">1</span>;
         Experiment::new(<span class="string">&quot;Test&quot;</span>)
             .control(|| -&gt; i32 { <span class="macro">panic!</span>(<span class="string">&quot;Oops&quot;</span>) })
             .experiment(|| expected)
@@ -621,7 +669,7 @@
         Experiment::new(<span class="string">&quot;Test&quot;</span>)
             .control(|| expected)
             .experiment(|| expected + <span class="number">1</span>)
-            .publish(|o: <span class="kw-2">&amp;</span><span class="kw">crate</span>::observation::Observation&lt;i32, i32&gt;| <span class="macro">assert!</span>(!o.is_matching()))
+            .publish(|o: <span class="kw-2">&amp;</span><span class="kw">crate</span>::Observation&lt;i32, i32&gt;| <span class="macro">assert!</span>(!o.is_matching()))
             .run();
     }
 
@@ -635,4 +683,4 @@
     }
 }
 </code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="scientisto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0-nightly (e972bc808 2023-01-29)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-a43118d2dfb2799d.js" data-settings-css="settings-7c23ac01f615ce90.css" ></div></body></html>
+</section></main></body></html>

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Experiment","Experiment Basic struct defining the conducted experiment. Initialized using type definitions instead of allocations. The `Experiment` is a consumable, once executed, it will consume the constituent functions defined for the experiment."]]};
+window.SIDEBAR_ITEMS = {"struct":["CompleteExperiment","ControlOnly","Experiment"]};
