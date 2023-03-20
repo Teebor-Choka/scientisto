@@ -6,7 +6,7 @@
 //!
 //! # Example usage
 //! ```rust
-//! use scientisto::Experiment;
+//! use scientisto::*;
 //! use tracing;
 //!
 //! let expected: i32 = 1;
