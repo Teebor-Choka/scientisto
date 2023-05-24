@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["experiment","observation"]};
+window.SIDEBAR_ITEMS = {"mod":["async_experiment","observation","sync_experiment"]};
