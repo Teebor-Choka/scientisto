@@ -12,7 +12,6 @@ use std::panic::{catch_unwind, AssertUnwindSafe};
 ///
 /// # Operation
 /// - decides whether or not to run the experiment block
-/// - measures the durations of all behaviors as std::time::Duration
 /// - swallows and records exceptions raised in the try block when overriding raised
 /// - publishes all this information
 ///
@@ -48,7 +47,7 @@ use std::panic::{catch_unwind, AssertUnwindSafe};
 /// Experiment::new("Test")
 ///     .control(|| -> f32 { 3.00 })
 ///     .experiment(|| -> f32 { 3.00 })
-///     .publish(|o: &scientisto::observation::Observation<f32, f32>| {
+///     .publish(|o: &scientisto::Observation<f32, f32>| {
 ///         assert!(o.is_matching());
 ///         info!("Any logic, including side effects, can be here!")
 ///      })
@@ -79,27 +78,24 @@ where
 #[derive(Debug, Clone)]
 pub struct Experiment {
     /// The name under which the experiment is registered.
-    name: String,
+    name: &'static str,
 }
 
 impl Experiment {
-    pub fn new(name: &str) -> Self {
+    pub fn new(name: &'static str) -> Self {
         if name.is_empty() {
             panic!("Experiment name cannot be empty");
         }
 
-        Self {
-            name: name.to_owned(),
-        }
+        Self { name }
     }
 
-    pub fn name(&self) -> String {
-        self.name.clone()
+    pub fn name(&self) -> &'static str {
+        self.name
     }
 
     pub fn control<T, F>(self, f: F) -> ControlOnly<T, F>
     where
-        T: PartialEq,
         F: Fn() -> T + std::panic::UnwindSafe,
     {
         ControlOnly {
@@ -111,20 +107,18 @@ impl Experiment {
 
 pub struct ControlOnly<TC, FC>
 where
-    TC: PartialEq,
     FC: Fn() -> TC + std::panic::UnwindSafe,
 {
-    name: String,
+    name: &'static str,
     control: Executable<TC, FC>,
 }
 
 impl<TC, FC> ControlOnly<TC, FC>
 where
-    TC: PartialEq,
     FC: Fn() -> TC + std::panic::UnwindSafe,
 {
-    pub fn name(&self) -> String {
-        self.name.clone()
+    pub fn name(&self) -> &'static str {
+        self.name
     }
 
     pub fn experiment<T, F>(
@@ -132,7 +126,6 @@ where
         f: F,
     ) -> CompleteExperiment<TC, FC, T, F, impl Fn(&crate::Observation<TC, T>)>
     where
-        T: PartialEq<TC>,
         F: Fn() -> T + std::panic::UnwindSafe,
     {
         CompleteExperiment {
@@ -146,12 +139,10 @@ where
 
 pub struct CompleteExperiment<TC, FC, TE, FE, FP>
 where
-    TE: PartialEq<TC>,
     FC: Fn() -> TC + std::panic::UnwindSafe,
     FE: Fn() -> TE + std::panic::UnwindSafe,
-    FP: Fn(&crate::Observation<TC, TE>),
 {
-    name: String,
+    name: &'static str,
     control: Executable<TC, FC>,
     experiment: Executable<TE, FE>,
     publish: FP,
@@ -159,17 +150,16 @@ where
 
 impl<TC, FC, TE, FE, FP> CompleteExperiment<TC, FC, TE, FE, FP>
 where
-    TE: PartialEq<TC>,
     FC: Fn() -> TC + std::panic::UnwindSafe,
     FE: Fn() -> TE + std::panic::UnwindSafe,
-    FP: Fn(&crate::Observation<TC, TE>),
 {
-    pub fn name(&self) -> String {
-        self.name.clone()
+    pub fn name(&self) -> &'static str {
+        self.name
     }
 
     pub fn publish<F>(self, f: F) -> CompleteExperiment<TC, FC, TE, FE, F>
     where
+        TE: PartialEq<TC>,
         F: Fn(&crate::Observation<TC, TE>),
     {
         CompleteExperiment::<TC, FC, TE, FE, F> {
@@ -180,13 +170,18 @@ where
         }
     }
 
-    pub fn run(&self) -> TC {
+    pub fn run(&self) -> TC
+    where
+        TE: PartialEq<TC>,
+        FP: Fn(&crate::Observation<TC, TE>),
+    {
         self.run_if(|| true)
     }
 
     pub fn run_if<P>(&self, predicate: P) -> TC
     where
         TE: PartialEq<TC>,
+        FP: Fn(&crate::Observation<TC, TE>),
         P: Fn() -> bool,
     {
         if predicate() {
@@ -235,7 +230,7 @@ mod tests {
     }
 
     #[test]
-    fn experiment_should_return_name_the_control_object() {
+    fn experiment_should_return_name_with_control_specified() {
         let actual_name: &str = "Only control callback";
         let experiment = Experiment::new(actual_name).control(|| false);
 

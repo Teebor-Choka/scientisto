@@ -5,20 +5,17 @@ use std::thread::Result;
 /// Observation aggregating the measurements collected during execution of the control and
 /// experimental functionality.
 #[derive(Debug)]
-pub struct Observation<T, TE>
-where
-    TE: PartialEq<T>,
-{
+pub struct Observation<T, TE> {
     pub control: Result<T>,
     pub experiment: Result<TE>,
 }
 
-impl<T, TE> Observation<T, TE>
-where
-    TE: PartialEq<T>,
-{
+impl<T, TE> Observation<T, TE> {
     /// Verify whether the control and experiment output a comparably equal or matching value.
-    pub fn is_matching(&self) -> bool {
+    pub fn is_matching(&self) -> bool
+    where
+        TE: PartialEq<T>,
+    {
         match (&self.experiment, &self.control) {
             (Ok(a), Ok(b)) => a == b,
             _ => false,
