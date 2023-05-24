@@ -13,7 +13,7 @@ categories = ["rust-patterns"]
 exclude = [".github/", "codecov.yml"]
 
 [dependencies]
-futures = "0.3.27"
+futures = "0.3.28"
 
 [dev-dependencies]
 async-std = { version = "1.12.0", features = ["attributes"] }

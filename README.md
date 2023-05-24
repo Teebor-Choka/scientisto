@@ -14,22 +14,39 @@ The library aims to be as minimal as possible, pulling no external dependencies 
 
 ## Usage
 
-`Experiment` struct represents a definition of the **control** and **experimental** execution block code paths.
+`Experiment` and `AsyncExperiment` structs represents a definition of the **control** and **experimental** execution block code paths.
 
 The experiment is guided by the configuration specified during the `Experiment` construction and result observations are published internally using the `publish` function.
 
 ```rust
-use scientisto::Experiment;
+use scientisto::{Experiment,Observation};
 use tracing;
 
 let expected: i32 = 1;
 let result = Experiment::new("Test")
     .control(|| expected)
     .experiment(|| expected + 1)
-    .publish(|o: &scientisto::Observation<i32, i32>| {
+    .publish(|o: &Observation<i32, i32>| {
         tracing::info!("You can do any magic in the publisher")
      })
     .run();
+```
+
+For `async` code the `AsyncExperiment` alternative can be used:
+```rust
+use scientisto::{AsyncExperiment,Observation};
+use tracing::info;
+
+async_std::task::block_on(async {
+    AsyncExperiment::new("Test")
+        .control(async { 3.0 })
+        .experiment(async { 3.0 })
+        .publish(|o: &Observation<f32, f32>| {
+            assert!(o.is_matching());
+            info!("Any logic, including side effects, can be here!")
+         })
+        .run().await;
+})
 ```
 
 
@@ -37,7 +54,6 @@ let result = Experiment::new("Test")
 ## Limitations
 
 - No defaults are provided for the `control` and `experiment` callbacks, they must be fully specified
-- No `async` support
 
 
 

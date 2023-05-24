@@ -12,7 +12,6 @@ use std::panic::{catch_unwind, AssertUnwindSafe};
 ///
 /// # Operation
 /// - decides whether or not to run the experiment block
-/// - measures the durations of all behaviors as std::time::Duration
 /// - swallows and records exceptions raised in the try block when overriding raised
 /// - publishes all this information
 ///
@@ -88,7 +87,7 @@ impl Experiment {
             panic!("Experiment name cannot be empty");
         }
 
-        Self { name: name }
+        Self { name }
     }
 
     pub fn name(&self) -> &'static str {
@@ -201,59 +200,6 @@ where
             (self.control.f)()
         }
     }
-
-    pub fn async_publish<F, U, V>(self, f: F) -> CompleteExperiment<TC, FC, TE, FE, F>
-    where
-        TC: std::future::Future<Output = U>,
-        TE: std::future::Future<Output = V>,
-        F: Fn(&crate::Observation<U, V>),
-        V: PartialEq<U>,
-    {
-        CompleteExperiment::<TC, FC, TE, FE, F> {
-            name: self.name,
-            control: self.control,
-            experiment: self.experiment,
-            publish: f,
-        }
-    }
-
-    pub fn async_run<U, V>(self) -> impl std::future::Future<Output = U>
-    where
-        TC: std::future::Future<Output = U>,
-        TE: std::future::Future<Output = V>,
-        FP: Fn(&crate::Observation<U, V>),
-    {
-        self.async_run_if(|| true)
-    }
-
-    pub fn async_run_if<P, U, V>(self, predicate: P) -> impl std::future::Future<Output = U>
-    where
-        TC: std::future::Future<Output = U>,
-        TE: std::future::Future<Output = V>,
-        FP: Fn(&crate::Observation<U, V>),
-        P: Fn() -> bool,
-    {
-        let should_run_experiment = predicate();
-        async move {
-            if should_run_experiment {
-                let (control, experiment) =
-                    futures::join!((&self.control.f)(), (&self.experiment.f)());
-                let observation = crate::Observation::<U, V> {
-                    control: Ok(control),
-                    experiment: Ok(experiment),
-                };
-
-                (self.publish)(&observation);
-
-                match observation.control {
-                    Ok(result) => result,
-                    Err(e) => std::panic::resume_unwind(e),
-                }
-            } else {
-                (self.control.f)().await
-            }
-        }
-    }
 }
 
 #[cfg(test)]
@@ -284,7 +230,7 @@ mod tests {
     }
 
     #[test]
-    fn experiment_should_return_name_the_control_object() {
+    fn experiment_should_return_name_with_control_specified() {
         let actual_name: &str = "Only control callback";
         let experiment = Experiment::new(actual_name).control(|| false);
 
@@ -387,22 +333,5 @@ mod tests {
             .control(|| expected)
             .experiment(|| -> i32 { panic!("Yikes") })
             .run();
-    }
-
-    #[async_std::test]
-    async fn experiment_should_work_async_functions_returning_comparable_types() {
-        let expected: i32 = 1;
-        let expected_as_i64 = TestI64 {
-            value: expected as i64,
-        };
-
-        assert!(expected_as_i64 == expected_as_i64); // implements PartialEq
-
-        Experiment::new("Test")
-            .control(move || async move { expected })
-            .experiment(move || async move { expected_as_i64 })
-            .async_publish(move |o: &crate::Observation<i32, TestI64>| assert!(o.is_matching()))
-            .async_run()
-            .await;
     }
 }
