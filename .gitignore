@@ -11,3 +11,5 @@ Cargo.lock
 
 ## common IDE ignores
 .idea
+
+.direnv/
