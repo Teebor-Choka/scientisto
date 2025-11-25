@@ -53,7 +53,6 @@ use std::panic::{catch_unwind, AssertUnwindSafe};
 ///      })
 ///     .run();
 /// ```
-///
 
 struct Executable<T, F>
 where
