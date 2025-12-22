@@ -10,7 +10,7 @@ homepage = "https://teebor-choka.github.io/scientisto/scientisto/index.html"
 repository = "https://github.com/Teebor-Choka/scientisto"
 keywords = ["scientist", "refactoring", "github", "critical"]
 categories = ["rust-patterns"]
-exclude = [".github/", "codecov.yml"]
+exclude = [".github/", "codecov.yml", ".pre-commit-config.yaml", "rust-toolchain.toml"]
 
 [features]
 default = ["sync", "async"]
