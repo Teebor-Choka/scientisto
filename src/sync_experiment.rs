@@ -59,7 +59,6 @@ use std::{
 ///     })
 ///     .run();
 /// ```
-
 struct Executable<T, F>
 where
     F: Fn() -> T,
