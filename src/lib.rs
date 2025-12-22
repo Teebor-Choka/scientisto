@@ -26,7 +26,7 @@
 //! use tracing;
 //!
 //! let expected: i32 = 1;
-//! async_std::task::block_on(async {
+//! futures::executor::block_on(async {
 //!     let result = AsyncExperiment::new("Test")
 //!         .control(async { expected })
 //!         .experiment(async { expected + 1 } )
@@ -37,10 +37,18 @@
 //! })
 //! ```
 
+#[cfg(feature = "async")]
 pub mod async_experiment;
+
 pub mod observation;
+
+#[cfg(feature = "sync")]
 pub mod sync_experiment;
 
-pub use async_experiment::AsyncExperiment;
 pub use observation::Observation;
+
+#[cfg(feature = "async")]
+pub use async_experiment::AsyncExperiment;
+
+#[cfg(feature = "sync")]
 pub use sync_experiment::Experiment;

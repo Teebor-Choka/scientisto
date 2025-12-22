@@ -1,6 +1,6 @@
 [package]
 name = "scientisto"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Tibor Csóka"]
 license = "MIT"
 edition = "2024"
@@ -12,11 +12,16 @@ keywords = ["scientist", "refactoring", "github", "critical"]
 categories = ["rust-patterns"]
 exclude = [".github/", "codecov.yml"]
 
+[features]
+default = ["sync", "async"]
+sync = []
+async = ["dep:futures"]
+
 [dependencies]
-futures = "0.3.31"
+futures = { version = "0.3.31", optional = true }
 
 [dev-dependencies]
-tokio = { version = "1.48.0", features = ["derive"] }
+tokio = { version = "1.48.0", features = ["rt", "macros"] }
 tracing = "0.1.44"
 
 [badges]

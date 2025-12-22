@@ -1,4 +1,5 @@
 /// `async` Experiment
+/// 
 /// Basic struct defining the conducted `async` experiment. Initialized using type definitions instead of
 /// allocations. The `AsyncExperiment` is a consumable, once executed, it will consume the constituent
 /// futures defined for the experiment.
@@ -29,7 +30,7 @@
 /// async fn production() -> f32 { 3.00 }
 /// async fn alternative() -> f32 { 3.02 }
 ///
-/// async_std::task::block_on(async {
+/// futures::executor::block_on(async {
 ///     AsyncExperiment::new("Using callback functions")
 ///         .control(production())
 ///         .experiment(alternative())
@@ -43,7 +44,7 @@
 /// use scientisto::{AsyncExperiment,Observation};
 /// use tracing::info;
 ///
-/// async_std::task::block_on(async {
+/// futures::executor::block_on(async {
 ///     AsyncExperiment::new("Test")
 ///         .control(async { 3.0 })
 ///         .experiment(async { 3.0 })
@@ -230,7 +231,7 @@ mod tests {
         assert_eq!(experiment.name(), name);
     }
 
-    #[async_std::test]
+    #[tokio::test]
     async fn async_experiment_should_always_return_the_control_value() {
         let expected = 1;
         let actual = AsyncExperiment::new("Test")
@@ -242,7 +243,7 @@ mod tests {
         assert_eq!(actual, expected);
     }
 
-    #[async_std::test]
+    #[tokio::test]
     async fn async_experiment_should_not_run_the_experiment_if_conditioned_not_to() {
         let expected = 1;
         let actual = AsyncExperiment::new("Test")
@@ -255,7 +256,7 @@ mod tests {
         assert_eq!(actual, expected);
     }
 
-    #[async_std::test]
+    #[tokio::test]
     async fn async_experiment_should_publish_the_results_when_publish_method_is_specified() {
         let expected = 1;
         AsyncExperiment::new("Test")
@@ -277,7 +278,7 @@ mod tests {
         }
     }
 
-    #[async_std::test]
+    #[tokio::test]
     async fn async_experiment_should_work_with_different_return_types_if_they_are_comparable() {
         let expected: i32 = 1;
         let expected_as_i64 = TestI64 {
@@ -294,7 +295,7 @@ mod tests {
             .await;
     }
 
-    #[async_std::test]
+    #[tokio::test]
     #[should_panic]
     async fn async_experiment_should_panic_if_control_panics() {
         std::panic::set_hook(Box::new(|_| {})); // hide traces from panic
@@ -308,7 +309,7 @@ mod tests {
             .await;
     }
 
-    #[async_std::test]
+    #[tokio::test]
     async fn async_experiment_should_return_control_value_if_the_experiment_value_is_different() {
         let expected: i32 = 1;
         AsyncExperiment::new("Test")
