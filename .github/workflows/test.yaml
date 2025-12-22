@@ -1,0 +1,35 @@
+name: Test
+on:
+  pull_request:
+jobs:
+  test:
+    name: Unit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v6
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: "stable"
+          override: true
+      - name: Run cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v6
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: "stable"
+          override: true
+      - name: Run cargo publish test
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --dry-run

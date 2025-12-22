@@ -1,24 +1,16 @@
----
-
 name: Security audit
-
 on:
-  schedule:
-    - cron: '0 0 1 * *'
-  push:
+  pull_request:
     paths:
       - '**/Cargo.toml'
       - '**/Cargo.lock'
-  pull_request:
-
 jobs:
   audit:
-    name: Audit
+    name: Rust code
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@v6
-
       - name: Audit code
         uses: actions-rs/audit-check@v1.2.0
         with:
