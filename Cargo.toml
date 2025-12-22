@@ -3,7 +3,7 @@ name = "scientisto"
 version = "0.3.0"
 authors = ["Tibor Csóka"]
 license = "MIT"
-edition = "2021"
+edition = "2024"
 description = "A light-weight Rust implementation of the github/scientist library used for careful refactoring of critical code paths."
 documentation = "https://teebor-choka.github.io/scientisto/scientisto/index.html"
 homepage = "https://teebor-choka.github.io/scientisto/scientisto/index.html"
@@ -13,11 +13,11 @@ categories = ["rust-patterns"]
 exclude = [".github/", "codecov.yml"]
 
 [dependencies]
-futures = "0.3.28"
+futures = "0.3.31"
 
 [dev-dependencies]
-async-std = { version = "1.12.0", features = ["attributes"] }
-tracing = "0.1.37"
+tokio = { version = "1.48.0", features = ["derive"] }
+tracing = "0.1.44"
 
 [badges]
 maintenance = { status = "actively-developed" }

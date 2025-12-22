@@ -1,8 +1,1 @@
----
-
-repos:
-  - repo: https://github.com/doublify/pre-commit-rust
-    rev: v1.0
-    hooks:
-      - id: fmt
-        args: ['--verbose', '--']
+/nix/store/5w5y2g0k7n3f57gb5z6c24d1q2ra0dm4-pre-commit-config.json

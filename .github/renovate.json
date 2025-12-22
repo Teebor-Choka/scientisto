@@ -1,0 +1,27 @@
+{
+  "enabled": true,
+  "prCreation": "not-pending",
+  "extends": [
+    "schedule:earlyMondays",
+    "config:recommended",
+    "group:allNonMajor",
+    "group:allDigest",
+    ":disableDependencyDashboard"
+  ],
+  "vulnerabilityAlerts": { "enabled": true },
+  "semanticCommits": "enabled",
+  "rangeStrategy": "bump",
+  "packageRules": [
+    { "matchCategories": ["rust"], "enabled": true },
+    { "matchCategories": ["docker"], "enabled": true, "pinDigests": true },
+    {
+      "matchPackageNames": [
+        "serde_yaml",
+        "libp2p-stream",
+        "rand",
+        "parameterized"
+      ],
+      "enabled": false
+    }
+  ]
+}
