@@ -1,5 +1,7 @@
-use std::marker::PhantomData;
-use std::panic::{catch_unwind, AssertUnwindSafe};
+use std::{
+    marker::PhantomData,
+    panic::{AssertUnwindSafe, catch_unwind},
+};
 
 /// Experiment
 /// Basic struct defining the conducted experiment. Initialized using type definitions instead of
@@ -29,8 +31,12 @@ use std::panic::{catch_unwind, AssertUnwindSafe};
 /// ```rust
 /// use scientisto::Experiment;
 ///
-/// fn production() -> f32 { 3.00 }
-/// fn alternative() -> f32 { 3.02 }
+/// fn production() -> f32 {
+///     3.00
+/// }
+/// fn alternative() -> f32 {
+///     3.02
+/// }
 ///
 /// Experiment::new("Using callback functions")
 ///     .control(production)
@@ -50,10 +56,9 @@ use std::panic::{catch_unwind, AssertUnwindSafe};
 ///     .publish(|o: &scientisto::Observation<f32, f32>| {
 ///         assert!(o.is_matching());
 ///         info!("Any logic, including side effects, can be here!")
-///      })
+///     })
 ///     .run();
 /// ```
-
 struct Executable<T, F>
 where
     F: Fn() -> T,
@@ -120,10 +125,7 @@ where
         self.name
     }
 
-    pub fn experiment<T, F>(
-        self,
-        f: F,
-    ) -> CompleteExperiment<TC, FC, T, F, impl Fn(&crate::Observation<TC, T>)>
+    pub fn experiment<T, F>(self, f: F) -> CompleteExperiment<TC, FC, T, F, impl Fn(&crate::Observation<TC, T>)>
     where
         F: Fn() -> T + std::panic::UnwindSafe,
     {
@@ -290,9 +292,7 @@ mod tests {
     #[test]
     fn experiment_should_work_with_different_return_types_if_they_are_comparable() {
         let expected: i32 = 1;
-        let expected_as_i64 = TestI64 {
-            value: expected as i64,
-        };
+        let expected_as_i64 = TestI64 { value: expected as i64 };
 
         assert!(expected_as_i64 == expected_as_i64); // implements PartialEq
 

@@ -1,4 +1,5 @@
 /// `async` Experiment
+///
 /// Basic struct defining the conducted `async` experiment. Initialized using type definitions instead of
 /// allocations. The `AsyncExperiment` is a consumable, once executed, it will consume the constituent
 /// futures defined for the experiment.
@@ -24,37 +25,42 @@
 /// # Examples
 /// ## Using function callbacks
 /// ```rust
-/// use scientisto::{AsyncExperiment,Observation};
+/// use scientisto::{AsyncExperiment, Observation};
 ///
-/// async fn production() -> f32 { 3.00 }
-/// async fn alternative() -> f32 { 3.02 }
+/// async fn production() -> f32 {
+///     3.00
+/// }
+/// async fn alternative() -> f32 {
+///     3.02
+/// }
 ///
-/// async_std::task::block_on(async {
+/// futures::executor::block_on(async {
 ///     AsyncExperiment::new("Using callback functions")
 ///         .control(production())
 ///         .experiment(alternative())
 ///         .publish(|o: &Observation<f32, f32>| assert!(!o.is_matching()))
-///         .run().await;
+///         .run()
+///         .await;
 /// })
 /// ```
 ///
 /// ## Using closures
 /// ```rust
-/// use scientisto::{AsyncExperiment,Observation};
+/// use scientisto::{AsyncExperiment, Observation};
 /// use tracing::info;
 ///
-/// async_std::task::block_on(async {
+/// futures::executor::block_on(async {
 ///     AsyncExperiment::new("Test")
 ///         .control(async { 3.0 })
 ///         .experiment(async { 3.0 })
 ///         .publish(|o: &Observation<f32, f32>| {
 ///             assert!(o.is_matching());
 ///             info!("Any logic, including side effects, can be here!")
-///          })
-///         .run().await;
+///         })
+///         .run()
+///         .await;
 /// })
 /// ```
-///
 #[derive(Debug, Clone)]
 pub struct AsyncExperiment {
     /// The name under which the experiment is registered.
@@ -101,10 +107,7 @@ where
         self.name
     }
 
-    pub fn experiment<T, F>(
-        self,
-        f: F,
-    ) -> AsyncCompleteExperiment<TC, FC, T, F, impl Fn(&crate::Observation<TC, T>)>
+    pub fn experiment<T, F>(self, f: F) -> AsyncCompleteExperiment<TC, FC, T, F, impl Fn(&crate::Observation<TC, T>)>
     where
         F: std::future::Future<Output = T>,
     {
@@ -223,14 +226,12 @@ mod tests {
     #[test]
     fn async_experiment_should_return_name_if_control_and_experiment_are_fully_specified() {
         let name: &str = "Only control callback";
-        let experiment = AsyncExperiment::new(name)
-            .control(async { 1 })
-            .experiment(async { 1 });
+        let experiment = AsyncExperiment::new(name).control(async { 1 }).experiment(async { 1 });
 
         assert_eq!(experiment.name(), name);
     }
 
-    #[async_std::test]
+    #[tokio::test]
     async fn async_experiment_should_always_return_the_control_value() {
         let expected = 1;
         let actual = AsyncExperiment::new("Test")
@@ -242,7 +243,7 @@ mod tests {
         assert_eq!(actual, expected);
     }
 
-    #[async_std::test]
+    #[tokio::test]
     async fn async_experiment_should_not_run_the_experiment_if_conditioned_not_to() {
         let expected = 1;
         let actual = AsyncExperiment::new("Test")
@@ -255,7 +256,7 @@ mod tests {
         assert_eq!(actual, expected);
     }
 
-    #[async_std::test]
+    #[tokio::test]
     async fn async_experiment_should_publish_the_results_when_publish_method_is_specified() {
         let expected = 1;
         AsyncExperiment::new("Test")
@@ -277,12 +278,10 @@ mod tests {
         }
     }
 
-    #[async_std::test]
+    #[tokio::test]
     async fn async_experiment_should_work_with_different_return_types_if_they_are_comparable() {
         let expected: i32 = 1;
-        let expected_as_i64 = TestI64 {
-            value: expected as i64,
-        };
+        let expected_as_i64 = TestI64 { value: expected as i64 };
 
         assert!(expected_as_i64 == expected_as_i64); // implements PartialEq
 
@@ -294,7 +293,7 @@ mod tests {
             .await;
     }
 
-    #[async_std::test]
+    #[tokio::test]
     #[should_panic]
     async fn async_experiment_should_panic_if_control_panics() {
         std::panic::set_hook(Box::new(|_| {})); // hide traces from panic
@@ -308,7 +307,7 @@ mod tests {
             .await;
     }
 
-    #[async_std::test]
+    #[tokio::test]
     async fn async_experiment_should_return_control_value_if_the_experiment_value_is_different() {
         let expected: i32 = 1;
         AsyncExperiment::new("Test")
