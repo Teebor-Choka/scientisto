@@ -14,9 +14,7 @@
 //! let result = Experiment::new("Test")
 //!     .control(|| expected)
 //!     .experiment(|| expected + 1)
-//!     .publish(|o: &Observation<i32, i32>| {
-//!         tracing::info!("You can do any magic in the publisher")
-//!      })
+//!     .publish(|o: &Observation<i32, i32>| tracing::info!("You can do any magic in the publisher"))
 //!     .run();
 //! ```
 //!
@@ -29,11 +27,10 @@
 //! futures::executor::block_on(async {
 //!     let result = AsyncExperiment::new("Test")
 //!         .control(async { expected })
-//!         .experiment(async { expected + 1 } )
-//!         .publish(|o: &Observation<i32, i32>| {
-//!             tracing::info!("You can do any magic in the publisher")
-//!         })
-//!         .run().await;
+//!         .experiment(async { expected + 1 })
+//!         .publish(|o: &Observation<i32, i32>| tracing::info!("You can do any magic in the publisher"))
+//!         .run()
+//!         .await;
 //! })
 //! ```
 
@@ -45,10 +42,8 @@ pub mod observation;
 #[cfg(feature = "sync")]
 pub mod sync_experiment;
 
-pub use observation::Observation;
-
 #[cfg(feature = "async")]
 pub use async_experiment::AsyncExperiment;
-
+pub use observation::Observation;
 #[cfg(feature = "sync")]
 pub use sync_experiment::Experiment;
