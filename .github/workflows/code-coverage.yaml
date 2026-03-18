@@ -12,9 +12,9 @@ jobs:
       CARGO_TERM_COLOR: always
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v6
-      - name: Install Rust
-        run: rustup update stable
+        uses: actions/checkout@v4
+      - name: Install toolchain
+        uses: dtolnay/rust-toolchain@stable
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@cargo-llvm-cov
       - name: Generate code coverage
@@ -24,4 +24,5 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: lcov.info
+          flags: unit
           fail_ci_if_error: true
