@@ -4,13 +4,19 @@ version = "0.4.0"
 authors = ["Tibor Csóka"]
 license = "MIT"
 edition = "2024"
+rust-version = "1.91"
 description = "A light-weight Rust implementation of the github/scientist library used for careful refactoring of critical code paths."
 documentation = "https://teebor-choka.github.io/scientisto/scientisto/index.html"
 homepage = "https://teebor-choka.github.io/scientisto/scientisto/index.html"
 repository = "https://github.com/Teebor-Choka/scientisto"
 keywords = ["scientist", "refactoring", "github", "critical"]
 categories = ["rust-patterns"]
-exclude = [".github/", "codecov.yml", ".pre-commit-config.yaml", "rust-toolchain.toml"]
+exclude = [
+  ".github/",
+  "codecov.yml",
+  ".pre-commit-config.yaml",
+  "rust-toolchain.toml",
+]
 
 [features]
 default = ["sync", "async"]
@@ -26,3 +32,24 @@ tracing = "0.1.44"
 
 [badges]
 maintenance = { status = "actively-developed" }
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+panic = "abort"
+strip = true
+opt-level = 3
+
+[profile.test]
+opt-level = 1
+
+[profile.bench]
+debug = 2
+split-debuginfo = "off"
+strip = false
+
+[package.metadata.cargo-shear]
+ignored = ["tracing"]

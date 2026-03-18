@@ -4,9 +4,10 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    nixpkgs.url = "github:NixOS/nixpkgs/release-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/release-25.11";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/master";
     rust-overlay.url = "github:oxalica/rust-overlay/master";
-    crane.url = "github:ipetkov/crane/v0.21.0";
+    crane.url = "github:ipetkov/crane/v0.23.0";
     nix-lib.url = "github:hoprnet/nix-lib";
     # pin it to a version which we are compatible with
     pre-commit.url = "github:cachix/git-hooks.nix";
@@ -20,6 +21,7 @@
     nix-lib.inputs.flake-parts.follows = "flake-parts";
     nix-lib.inputs.rust-overlay.follows = "rust-overlay";
     nix-lib.inputs.treefmt-nix.follows = "treefmt-nix";
+    nix-lib.inputs.nixpkgs-unstable.follows = "nixpkgs-unstable";
     pre-commit.inputs.nixpkgs.follows = "nixpkgs";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -29,6 +31,7 @@
     {
       self,
       nixpkgs,
+      nixpkgs-unstable,
       flake-utils,
       flake-parts,
       rust-overlay,
@@ -57,10 +60,20 @@
             (import rust-overlay)
           ];
           pkgs = import nixpkgs { inherit localSystem overlays; };
+          pkgs-unstable = import nixpkgs-unstable { inherit localSystem overlays; };
           buildPlatform = pkgs.stdenv.buildPlatform;
 
           # Import nix-lib for shared Nix utilities
           nixLib = nix-lib.lib.${system};
+
+          # Wrapper for rustfmt to fix macOS dylib loading issue
+          # On macOS, rust-overlay symlinks rustfmt to a standalone package that can't find its dylibs.
+          # This wrapper sets DYLD_LIBRARY_PATH to the toolchain's lib directory.
+          nightlyToolchain = pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default);
+          rustfmtWrapper = pkgs.writeShellScriptBin "rustfmt" ''
+            export DYLD_LIBRARY_PATH="${nightlyToolchain}/lib:$DYLD_LIBRARY_PATH"
+            exec "${nightlyToolchain}/bin/rustfmt" "$@"
+          '';
 
           craneLib = (crane.mkLib pkgs).overrideToolchain (p: p.rust-bin.stable.latest.default);
           crateInfoOriginal = craneLib.crateNameFromCargoToml {
@@ -107,6 +120,9 @@
           rust-builder-aarch64-linux = builders.aarch64-linux;
           rust-builder-aarch64-darwin = builders.aarch64-darwin;
 
+          # Coverage builder with llvm-tools for code coverage instrumentation
+          rust-builder-local-coverage = builders.localCoverage;
+
           # Nightly builder for docs and specific features
           rust-builder-local-nightly = nixLib.mkRustBuilder {
             inherit localSystem;
@@ -129,6 +145,18 @@
           docs = rust-builder-local-nightly.callPackage nixLib.mkRustPackage (
             scientistoBuildArgs // { buildDocs = true; }
           );
+
+          # Code coverage (outputs LCOV report)
+          coverage = rust-builder-local-coverage.callPackage nixLib.mkRustPackage (
+            scientistoBuildArgs
+            // {
+              src = testSrc;
+              runCoverage = true;
+              prependPackageName = false;
+              cargoLlvmCovExtraArgs = "--lcov --output-path $out --lib";
+            }
+          );
+
           pre-commit-check = pre-commit.lib.${system}.run {
             src = ./.;
             hooks = {
@@ -156,6 +184,7 @@
             treefmtWrapper = config.treefmt.build.wrapper;
             treefmtPrograms = pkgs.lib.attrValues config.treefmt.build.programs;
             extraPackages = with pkgs; [
+              pkgs-unstable.cargo-audit
               cargo-machete
               cargo-shear
               cargo-insta
@@ -163,6 +192,26 @@
             shellHook = ''
               ${pre-commit-check.shellHook}
             '';
+          };
+
+          # Development shell with Rust nightly
+          devShellNightly = nixLib.mkDevShell {
+            rustToolchainFile = ./rust-toolchain.toml;
+            shellName = "'scientisto' Development (Nightly)";
+            treefmtWrapper = config.treefmt.build.wrapper;
+            treefmtPrograms = pkgs.lib.attrValues config.treefmt.build.programs;
+            extraPackages = with pkgs; [
+              pkgs-unstable.cargo-audit
+              cargo-machete
+              cargo-shear
+              cargo-insta
+            ];
+            shellHook = ''
+              # Fix macOS dylib loading for nightly rustfmt (rust-overlay symlink issue)
+              export DYLD_LIBRARY_PATH="${nightlyToolchain}/lib:$DYLD_LIBRARY_PATH"
+              ${pre-commit-check.shellHook}
+            '';
+            rustToolchain = nightlyToolchain;
           };
 
           ciShell = nixLib.mkDevShell {
@@ -173,6 +222,7 @@
             extraPackages = with pkgs; [
               act
               gh
+              pkgs-unstable.cargo-audit
               cargo-machete
               cargo-shear
               graphviz
@@ -190,11 +240,19 @@
             extraPackages = with pkgs; [
               html-tidy
               pandoc
+              cargo-machete
+              cargo-shear
             ];
             shellHook = ''
               ${pre-commit-check.shellHook}
             '';
-            rustToolchain = pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default);
+            rustToolchain = nightlyToolchain;
+          };
+
+          coverageShell = nixLib.mkDevShell {
+            rustToolchainFile = ./rust-toolchain.toml;
+            shellName = "'scientisto' Coverage";
+            withLlvmTools = true;
           };
 
           run-audit = flake-utils.lib.mkApp {
@@ -202,7 +260,7 @@
               name = "audit";
               runtimeInputs = [
                 pkgs.cargo
-                pkgs.cargo-audit
+                pkgs-unstable.cargo-audit
               ];
               text = ''
                 cargo audit
@@ -267,7 +325,7 @@
             programs.ruff-format.enable = true;
 
             settings.formatter.rustfmt = {
-              command = "${pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default)}/bin/rustfmt";
+              command = "${rustfmtWrapper}/bin/rustfmt";
             };
           };
 
@@ -284,14 +342,17 @@
               scientisto
               ;
             inherit docs;
+            inherit coverage;
             inherit pre-commit-check;
             # binary packages
             default = scientisto;
           };
 
           devShells.default = devShell;
+          devShells.nightly = devShellNightly;
           devShells.ci = ciShell;
           devShells.docs = docsShell;
+          devShells.coverage = coverageShell;
 
           formatter = config.treefmt.build.wrapper;
         };
