@@ -38,3 +38,9 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(cargo)"
+    # Held back — carried over from the removed Renovate config.
+    ignore:
+      - dependency-name: "serde_yaml"
+      - dependency-name: "libp2p-stream"
+      - dependency-name: "rand"
+      - dependency-name: "parameterized"
