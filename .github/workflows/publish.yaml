@@ -11,7 +11,7 @@ jobs:
       id-token: write # mint the OIDC token for crates.io trusted publishing
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install toolchain
         uses: dtolnay/rust-toolchain@stable
       # Exchange the GitHub OIDC token for a short-lived crates.io token (Trusted
@@ -31,7 +31,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install toolchain
         uses: dtolnay/rust-toolchain@nightly
       - name: Generate documentation
