@@ -26,7 +26,7 @@ jobs:
       # pattern hoprnet uses. OIDC is a workflow permission, not a repo secret, so it
       # works on Dependabot PRs too. Skipped for fork PRs, which can't mint an id-token.
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         if: >-
           github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         with:
